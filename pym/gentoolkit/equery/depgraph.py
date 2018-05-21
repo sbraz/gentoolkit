@@ -68,7 +68,7 @@ def print_help(with_description=True):
 		(" -M, --no-mask", "do not show masking status"),
 		(" -U, --no-useflags", "do not show USE flags"),
 		(" -l, --linear", "do not format the graph by indenting dependencies"),
-		("     --depth=N", "limit dependency graph to specified depth")
+		(" -d, --depth=N", "limit dependency graph to specified depth")
 	)))
 
 
@@ -89,7 +89,7 @@ def parse_module_options(module_opts):
 			QUERY_OPTS["no_mask"] = True
 		if opt in ('-l', '--linear'):
 			QUERY_OPTS["no_indent"] = True
-		if opt in ('--depth'):
+		if opt in ('-d', '--depth'):
 			if posarg.isdigit():
 				depth = int(posarg)
 			else:
@@ -194,7 +194,7 @@ def make_depgraph(pkg, printer_fn):
 def main(input_args):
 	"""Parse input and run the program"""
 
-	short_opts = "hAMUl"
+	short_opts = "hAMUld:"
 	long_opts = ('help', 'no-atom', 'no-useflags', 'no-mask', 'depth=')
 
 	try:
