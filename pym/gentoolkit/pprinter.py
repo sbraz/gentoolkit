@@ -191,4 +191,35 @@ def uprint(*args, **kw):
 	text = sep.join(encoded_args())
 	file.write(text + end)
 
-# vim: set ts=4 sw=4 tw=79:
+def print_tree(items, printer_fn=None):
+	fork_normal = "├── "
+	fork_initial = ""
+	fork_last = "└── "
+	vertical_normal = "│   "
+	vertical_empty = "    "
+	depth_list = []
+	for i, (depth, item) in enumerate(items):
+		fork_type = fork_last
+		for next_depth, _ in items[i + 1:]:
+			# do we see another element at the same depth before
+			# we go back to the previous depth
+			if next_depth == depth:
+				fork_type = fork_normal
+				break
+			if next_depth < depth:
+				break
+		if i == 0:
+			fork_type = fork_initial
+		elif i == len(items) - 1:
+			fork_type = fork_last
+		uprint("".join(depth_list[:depth - 1]) + fork_type, end="")
+		printer_fn(*item)
+		# update depth_list, padding it if necessary
+		depth_list = depth_list[:depth] + list(range(depth - len(depth_list)))
+		if i != 0:
+			if fork_type == fork_normal:
+				depth_list[depth - 1] = vertical_normal
+			else:
+				depth_list[depth - 1] = vertical_empty
+
+# vim: set ts=4 sw=4 tw=79 noexpandtab:

@@ -102,7 +102,6 @@ def parse_module_options(module_opts):
 
 
 def depgraph_printer(
-	depth,
 	pkg,
 	dep,
 	no_use=False,
@@ -113,8 +112,6 @@ def depgraph_printer(
 ):
 	"""Display L{gentoolkit.dependencies.Dependencies.graph_depends} results.
 
-	@type depth: int
-	@param depth: depth of indirection, used to calculate indent
 	@type pkg: L{gentoolkit.package.Package}
 	@param pkg: "best match" package matched by B{dep}
 	@type dep: L{gentoolkit.atom.Atom}
@@ -129,8 +126,6 @@ def depgraph_printer(
 	@param initial_pkg: somewhat of a hack used to print the root package of
 		the graph with absolutely no indent
 	"""
-	indent = '' if no_indent or initial_pkg else ' ' + (' ' * depth)
-	decorator = '[%3d] ' % depth if no_indent else '`-- '
 	use = ''
 	atom = ''
 	mask = ''
@@ -155,9 +150,7 @@ def depgraph_printer(
 				pkg.environment('KEYWORDS'))]
 		mask = pp.masking(mask)
 	try:
-		pp.uprint(' '.join(
-			(indent, decorator, pp.cpv(str(pkg.cpv)), atom, mask, use)
-			))
+		pp.uprint(' '.join((pp.cpv(str(pkg.cpv)), atom, mask, use)))
 	except AttributeError:
 		# 'NoneType' object has no attribute 'cpv'
 		pp.uprint(''.join((indent, decorator, "(no match for %r)" % dep.atom)))
@@ -174,14 +167,15 @@ def make_depgraph(pkg, printer_fn):
 		pp.uprint("%s:" % pkg.cpv)
 
 	# Print out the first package
-	printer_fn(0, pkg, None, initial_pkg=True)
+	#printer_fn(0, pkg, None, initial_pkg=True)
 
 	deps = pkg.deps.graph_depends(
 		max_depth=QUERY_OPTS['depth'],
-		printer_fn=printer_fn,
+		#printer_fn=printer_fn,
 		# Use this to set this pkg as the graph's root; better way?
-		result=[(0, pkg)]
+		result=[(0, (pkg, None))]
 	)
+	pp.print_tree(deps, printer_fn=printer_fn)
 
 	if CONFIG['verbose']:
 		pkgname = pp.cpv(str(pkg.cpv))
@@ -249,4 +243,4 @@ def main(input_args):
 
 		first_run = False
 
-# vim: set ts=4 sw=4 tw=79:
+# vim: set ts=4 sw=4 tw=79 noexpandtab:

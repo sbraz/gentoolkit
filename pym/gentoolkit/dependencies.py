@@ -159,7 +159,7 @@ class Dependencies(Query):
 			if depth <= max_depth or max_depth == 0:
 				if printer_fn is not None:
 					printer_fn(depth, pkgdep, dep)
-				result.append((depth,pkgdep))
+				result.append((depth, (pkgdep, dep)))
 
 				seen.add(pkgdep.cpv)
 				if depth < max_depth or max_depth == 0:
